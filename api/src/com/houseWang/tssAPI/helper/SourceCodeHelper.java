@@ -1,11 +1,10 @@
-package com.houseWang.tssAPI.module;
+package com.houseWang.tssAPI.helper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.Date;
 
@@ -13,10 +12,9 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SourceCodeHelper {
 
-	public static final String DEFAULT_CHARSET = "utf-8";
+	public static final String DEFAULT_CHARSET = "gbk";
 	private String urlStr = null;
 	private URL url = null;
-	private Proxy proxy = null;
 	private HttpURLConnection conn = null;
 	private long readTime = 0;
 
@@ -26,27 +24,11 @@ public class SourceCodeHelper {
 		System.out.println("TOUCH: " + url.toString());
 	}
 
-	public void setProxy(Proxy proxy) {
-		this.proxy = proxy;
-	}
-
-	public Proxy getProxy() {
-		return proxy;
-	}
-
 	private void openConnection() throws IOException {
 		if (urlStr.toLowerCase().startsWith("https")) {
-			if (proxy == null) {
-				conn = (HttpsURLConnection) url.openConnection();
-			} else {
-				conn = (HttpsURLConnection) url.openConnection(proxy);
-			}
+			conn = (HttpsURLConnection) url.openConnection();
 		} else {
-			if (proxy == null) {
-				conn = (HttpURLConnection) url.openConnection();
-			} else {
-				conn = (HttpURLConnection) url.openConnection(proxy);
-			}
+			conn = (HttpURLConnection) url.openConnection();
 		}
 		conn.setConnectTimeout(10000);
 		conn.setReadTimeout(10000);
@@ -102,7 +84,9 @@ public class SourceCodeHelper {
 		conn.setRequestProperty("connection", "Keep-Alive");
 		conn.setRequestProperty("user-agent",
 				"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-		conn.setRequestProperty("Cookie", "slide_order=0; JSESSIONID=4190BFD750A974AE43CF5E1552D06320; course_order=0; __utmz=71084115.1404450229.1.1.utmccn=(direct)|utmcsr=(direct)|utmcmd=(none); __utma=71084115.656670420.1404450229.1405673721.1405755921.17; __utmc=71084115; __utmb=71084115");
+		conn.setRequestProperty(
+				"Cookie",
+				"slide_order=0; JSESSIONID=4190BFD750A974AE43CF5E1552D06320; course_order=0; __utmz=71084115.1404450229.1.1.utmccn=(direct)|utmcsr=(direct)|utmcmd=(none); __utma=71084115.656670420.1404450229.1405673721.1405755921.17; __utmc=71084115; __utmb=71084115");
 		conn.connect();
 		System.out.println("READ: " + url.toString());
 		Date readStart = new Date();
