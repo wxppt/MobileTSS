@@ -148,8 +148,8 @@ public class TSS {
 	}
 
 	public static void main(String[] args) {
-		String name = "wx12";
-		String password = "popkart888";
+		String name = "";
+		String password = "";
 		TSS tss = TSS.getInstance();
 		tss.login(name, password.toCharArray(), 1);
 		tss.test();
