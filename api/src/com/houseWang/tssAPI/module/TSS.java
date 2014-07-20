@@ -1,62 +1,48 @@
 package com.houseWang.tssAPI.module;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import java.util.List;
 
 import com.houseWang.tssAPI.constant.URLConst;
+import com.houseWang.tssAPI.helper.FileHelper;
+import com.houseWang.tssAPI.helper.HttpsHelper;
+import com.houseWang.tssAPI.net.GetConnection;
+import com.houseWang.tssAPI.net.PostConnection;
 
 public class TSS {
 	/**
-	 * TSSµ¥Àı
+	 * TSSå•ä¾‹
 	 */
 	private static TSS instance = null;
 
 	/**
-	 * ÓÃ»§Ãû
+	 * ç”¨æˆ·å
 	 */
 	private String userName = null;
 	/**
-	 * ÃÜÂë
+	 * å¯†ç 
 	 */
 	/**
-	 * ¼ÇÂ¼ÓÃ»§µÇÂ¼µÄcookie
+	 * è®°å½•ç”¨æˆ·ç™»å½•çš„cookie
 	 */
 	private String cookie = null;
 	/**
-	 * ÊÇ·ñµÇÂ½
+	 * æ˜¯å¦ç™»é™†
 	 */
 	private boolean isLogin = false;
 
 	/**
-	 * ¹¹Ôì·½·¨£¬³õÊ¼»¯ÁË²»¾­ÑéÖ¤µÄHTTPSÁ¬½Ó
+	 * æ„é€ æ–¹æ³•ï¼Œåˆå§‹åŒ–äº†ä¸ç»éªŒè¯çš„HTTPSè¿æ¥
 	 */
 	private TSS() {
-		initTrustSSL();
+		HttpsHelper.initTrustSSL();
 	}
 
 	/**
-	 * µÃµ½TSSµ¥Àı
+	 * å¾—åˆ°TSSå•ä¾‹
 	 * 
-	 * @return TSSµ¥Àı
+	 * @return TSSå•ä¾‹
 	 */
 	public static TSS getInstance() {
 		if (instance == null) {
@@ -66,189 +52,99 @@ public class TSS {
 	}
 
 	/**
-	 * µÃµ½µ±Ç°µÄÓÃ»§Ãû
+	 * å¾—åˆ°å½“å‰çš„ç”¨æˆ·å
 	 * 
-	 * @return ÓÃ»§Ãû
+	 * @return ç”¨æˆ·å
 	 */
 	public String getUserName() {
 		return userName;
 	}
 
 	/**
-	 * ÊÇ·ñµÇÂ¼
+	 * æ˜¯å¦ç™»å½•
 	 * 
-	 * @return ÊÇ/·ñµÇÂ¼
+	 * @return æ˜¯/å¦ç™»å½•
 	 */
 	public boolean isLogin() {
 		return isLogin;
 	}
 
 	/**
-	 * ÔÚÁ¬½ÓHTTPSÁ¬½ÓÊ±²»¾­¹ıSSLÖ¤ÊéÑéÖ¤
-	 * 
-	 * @see http://blog.csdn.net/dengbodb/article/details/8281763
-	 */
-	private void initTrustSSL() {
-		try {
-			SSLContext sslCtx = SSLContext.getInstance("TLS");
-			sslCtx.init(null, new TrustManager[] { new X509TrustManager() {
-				public void checkClientTrusted(X509Certificate[] chain,
-						String authType) throws CertificateException {
-				}
-
-				public void checkServerTrusted(X509Certificate[] chain,
-						String authType) throws CertificateException {
-				}
-
-				public X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-			} }, new SecureRandom());
-
-			HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx
-					.getSocketFactory());
-			HttpsURLConnection
-					.setDefaultHostnameVerifier(new HostnameVerifier() {
-						public boolean verify(String hostname,
-								SSLSession session) {
-							return true;
-						}
-					});
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * µÇÂ¼£¬Èô³É¹¦£¬½«»á°ÑisLoginÖÃÎªtrue£¬·ñÔò±£³Öfalse£» ÔÚÒÑ¾­µÇÂ¼µÄÇé¿öÏÂ²»ÔÊĞíÖØ¸´µÇÂ¼
+	 * ç™»å½•ï¼Œè‹¥æˆåŠŸï¼Œå°†ä¼šæŠŠisLoginç½®ä¸ºtrueï¼Œå¦åˆ™ä¿æŒfalseï¼› åœ¨å·²ç»ç™»å½•çš„æƒ…å†µä¸‹ä¸å…è®¸é‡å¤ç™»å½•
 	 * 
 	 * @param userName
-	 *            ÓÃ»§Ãû
+	 *            ç”¨æˆ·å
 	 * @param password
-	 *            ÃÜÂë
+	 *            å¯†ç 
 	 * @param days
-	 *            cookiesÓĞĞ§ÆÚ
+	 *            cookiesæœ‰æ•ˆæœŸ
 	 */
 	public void login(String userName, char[] password, int days) {
 		this.userName = userName;
-
-		PrintWriter out = null;
-		BufferedReader in = null;
-		String result = "";
-		String jumpCookie = getLoginRequestCookie();
-
+		String jumpCookie = "";
 		try {
-			URL realUrl = new URL(URLConst.LOGIN_REQUEST);
-			HttpsURLConnection conn = (HttpsURLConnection) realUrl
-					.openConnection();
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent",
-					"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-			conn.setRequestProperty("Cookie", jumpCookie);
-			conn.setRequestProperty("Referer", URLConst.LOGIN_PAGE);
-			conn.setDoOutput(true);
-			conn.setDoInput(true);
-			conn.setRequestMethod("POST");
-			out = new PrintWriter(conn.getOutputStream());
-			out.print("username=" + userName + "&password="
-					+ new String(password) + "&days=" + days + "&Submit=Login");
-			out.flush();
-			in = new BufferedReader(
-					new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = in.readLine()) != null) {
-				result += line + "\n";
+			// å–å¾—tssç™»å½•çš„cookie
+			GetConnection jumpConn = new GetConnection(URLConst.LOGIN_PAGE);
+			List<String> jumpSetCookies = jumpConn.getResponseHeaderFields()
+					.get("Set-Cookie");
+			if (!jumpSetCookies.isEmpty()) {
+				jumpCookie = jumpSetCookies.get(0);
 			}
+			System.out.println(jumpCookie);
+
+			// ç™»å½•
+			PostConnection requestConn = new PostConnection(
+					URLConst.LOGIN_REQUEST);
+			requestConn.setRequestProperty("cookie", jumpCookie);
+			requestConn.putFormData("username", userName);
+			requestConn.putFormData("username", userName);
+			requestConn.putFormData("password", new String(password));
+			requestConn.putFormData("days", 30);
+			requestConn.putFormData("Submit", "Login");
+			String result = requestConn.getSourceCode("gbk");
 			if (result.contains("Login Failed")) {
 				System.out.println("Login Failed");
 			} else {
-				isLogin = true;
-				String location = conn.getHeaderField("Location");
-				URL seUrl = new URL(location);
-				HttpURLConnection seconn = (HttpURLConnection) seUrl
-						.openConnection();
-				seconn.setRequestProperty("accept", "*/*");
-				seconn.setRequestProperty("connection", "Keep-Alive");
-				seconn.setRequestProperty("user-agent",
-						"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-				seconn.connect();
-				cookie = seconn.getHeaderField("Set-Cookie");
-				System.out.println("Login Succeed");
-			}
-		} catch (Exception e) {
-			System.out.println("POST ERROR: " + e);
-		} finally {
-			try {
-				if (out != null) {
-					out.close();
+				List<String> locations = requestConn.getResponseHeaderFields()
+						.get("Location");
+				String location = null;
+				if (!locations.isEmpty()) {
+					location = locations.get(0);
+					// å–å¾—ç™»å½•è®¤è¯çš„cookie
+					GetConnection cookieConn = new GetConnection(location);
+					List<String> loginSetCookies = cookieConn
+							.getResponseHeaderFields().get("Set-Cookie");
+					if (!loginSetCookies.isEmpty()) {
+						cookie = loginSetCookies.get(0);
+						isLogin = true;
+						System.out.println("Login Succeed");
+					}
+					System.out.println(cookie);
+				} else {
+					System.out.println("Login Failed");
 				}
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
 			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
-	/**
-	 * µÃµ½·¢ËÍµÇÂ¼ÇëÇóµÄcookie£¬ÓÃÓÚÌø×ªµ½TSS
-	 * 
-	 * @return Ìø×ªÓÃµÄcookie
-	 */
-	private String getLoginRequestCookie() {
-		try {
-			URL realUrl = new URL(URLConst.LOGIN_PAGE);
-			HttpsURLConnection conn = (HttpsURLConnection) realUrl
-					.openConnection();
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent",
-					"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-			conn.connect();
-			String jumpCookie = conn.getHeaderField("Set-Cookie");
-			return jumpCookie;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public void getMyCourceList() {
+	public void test() {
 		if (!isLogin) {
 			System.out.println("NOT LOGIN YET");
 			return;
 		}
 		try {
-			URL realUrl = new URL(
+			GetConnection conn = new GetConnection(
 					"http://218.94.159.102/tss/en/c0738/slide/index.html");
-			HttpURLConnection conn = (HttpURLConnection) realUrl
-					.openConnection();
 			conn.setRequestProperty("Cookie", cookie);
-			conn.connect();
-			BufferedReader bfr = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
-			String ss = null;
-			String total = "";
-			while ((ss = bfr.readLine()) != null) {
-				total += ss + "\r\n";
-			}
-			bfr.close();
-			BufferedWriter bfw = new BufferedWriter(new FileWriter("d:/1.html"));
-			bfw.write(total);
-			bfw.flush();
-			bfw.close();
+			String total = conn.getSourceCode("gbk");
+			FileHelper.writeFile("d:/1.html", total, "gbk");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -256,6 +152,6 @@ public class TSS {
 		String password = "popkart888";
 		TSS tss = TSS.getInstance();
 		tss.login(name, password.toCharArray(), 1);
-		tss.getMyCourceList();
+		tss.test();
 	}
 }
