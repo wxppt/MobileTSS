@@ -13,10 +13,11 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.houseWang.tssAPI.constant.ConfConst;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 
 public class PostConnection {
-	public static final String DEFAULT_CHARSET = "utf-8";
+	public static final String DEFAULT_CHARSET = ConfConst.DEFAULT_CHARSET;
 	private String urlStr;
 	private URL url;
 	private HttpURLConnection conn;

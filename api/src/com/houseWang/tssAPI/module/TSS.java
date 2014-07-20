@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import com.houseWang.tssAPI.constant.ConfConst;
 import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.helper.FileHelper;
 import com.houseWang.tssAPI.helper.HttpsHelper;
@@ -101,7 +102,8 @@ public class TSS {
 			requestConn.putFormData("password", new String(password));
 			requestConn.putFormData("days", 30);
 			requestConn.putFormData("Submit", "Login");
-			String result = requestConn.getSourceCode("gbk");
+			String result = requestConn
+					.getSourceCode(ConfConst.DEFAULT_CHARSET);
 			if (result.contains("Login Failed")) {
 				System.out.println("Login Failed");
 			} else {
@@ -138,8 +140,8 @@ public class TSS {
 			GetConnection conn = new GetConnection(
 					"http://218.94.159.102/tss/en/c0738/slide/index.html");
 			conn.setRequestProperty("Cookie", cookie);
-			String total = conn.getSourceCode("gbk");
-			FileHelper.writeFile("d:/1.html", total, "gbk");
+			String total = conn.getSourceCode(ConfConst.DEFAULT_CHARSET);
+			FileHelper.writeFile("d:/1.html", total, ConfConst.DEFAULT_CHARSET);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
