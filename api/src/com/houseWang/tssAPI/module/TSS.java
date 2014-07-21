@@ -4,14 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.exception.NotLoginException;
-import com.houseWang.tssAPI.helper.FileHelper;
 import com.houseWang.tssAPI.helper.Filter;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 import com.houseWang.tssAPI.net.GetConnection;
@@ -182,7 +176,7 @@ public class TSS {
 			return myCList;
 		} catch (IOException e) {
 			e.printStackTrace();
-		return null;
+			return null;
 		}
 	}
 
@@ -235,6 +229,17 @@ public class TSS {
 		if (!isLogin) {
 			throw new NotLoginException();
 		}
+		try {
+			GetConnection conn = new GetConnection(URLConst.COURSEWARE_LIST(
+					couId, path));
+			if (cookie != null) {
+				conn.setRequestProperty("Cookie", cookie);
+			}
+			String source = conn.getSourceCode();
+			System.out.println(source);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -260,7 +265,6 @@ public class TSS {
 		String password = "";
 		TSS tss = TSS.getInstance();
 		tss.login(name, password.toCharArray());
-		ArrayList<Course> list = tss.getTotalCourseList();
-		System.out.println(list);
+		tss.getCoursewareList("c0867", "/安装双系统资料/VMware虚拟机安装Ubuntu/");
 	}
 }
