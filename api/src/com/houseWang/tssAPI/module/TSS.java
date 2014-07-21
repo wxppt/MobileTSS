@@ -1,12 +1,12 @@
 package com.houseWang.tssAPI.module;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.houseWang.tssAPI.constant.ConfConst;
 import com.houseWang.tssAPI.constant.URLConst;
-import com.houseWang.tssAPI.helper.FileHelper;
+import com.houseWang.tssAPI.exception.NotLoginException;
+import com.houseWang.tssAPI.helper.Filter;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 import com.houseWang.tssAPI.net.GetConnection;
 import com.houseWang.tssAPI.net.PostConnection;
@@ -80,7 +80,7 @@ public class TSS {
 	 * @param days
 	 *            cookies有效期
 	 */
-	public void login(String userName, char[] password, int days) {
+	public void login(String userName, char[] password) {
 		this.userName = userName;
 		String jumpCookie = "";
 		try {
@@ -91,7 +91,6 @@ public class TSS {
 			if (!jumpSetCookies.isEmpty()) {
 				jumpCookie = jumpSetCookies.get(0);
 			}
-			System.out.println(jumpCookie);
 
 			// 登录
 			PostConnection requestConn = new PostConnection(
@@ -102,8 +101,7 @@ public class TSS {
 			requestConn.putFormData("password", new String(password));
 			requestConn.putFormData("days", 30);
 			requestConn.putFormData("Submit", "Login");
-			String result = requestConn
-					.getSourceCode(ConfConst.DEFAULT_CHARSET);
+			String result = requestConn.getSourceCode();
 			if (result.contains("Login Failed")) {
 				System.out.println("Login Failed");
 			} else {
@@ -121,7 +119,6 @@ public class TSS {
 						isLogin = true;
 						System.out.println("Login Succeed");
 					}
-					System.out.println(cookie);
 				} else {
 					System.out.println("Login Failed");
 				}
@@ -131,29 +128,37 @@ public class TSS {
 		}
 	}
 
-	public void test() {
+	/**
+	 * 得到所有的课程列表
+	 * 
+	 * @return 课程列表
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public ArrayList<Course> getTotalCourseList() throws NotLoginException {
 		if (!isLogin) {
-			System.out.println("NOT LOGIN YET");
-			return;
+			throw new NotLoginException();
 		}
 		try {
-			GetConnection conn = new GetConnection(
-					"http://218.94.159.102/tss/en/c0738/slide/index.html");
-			conn.setRequestProperty("Cookie", cookie);
-			String total = conn.getSourceCode(ConfConst.DEFAULT_CHARSET);
-			FileHelper.writeFile("d:/1.html", total, ConfConst.DEFAULT_CHARSET);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			GetConnection conn = new GetConnection(URLConst.ALL_COURSE);
+			if (cookie != null) {
+				conn.setRequestProperty("Cookie", cookie);
+			}
+			String source = conn.getSourceCode();
+			ArrayList<Course> list = Filter.filterAllCourseList(source);
+			return list;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NotLoginException {
 		String name = "";
 		String password = "";
 		TSS tss = TSS.getInstance();
-		tss.login(name, password.toCharArray(), 1);
-		tss.test();
+		tss.login(name, password.toCharArray());
+		ArrayList<Course> list = tss.getTotalCourseList();
+		System.out.println(list);
 	}
 }

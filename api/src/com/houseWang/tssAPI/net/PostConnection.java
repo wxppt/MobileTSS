@@ -91,14 +91,10 @@ public class PostConnection {
 		return null;
 	}
 
-	public String getSourceCode(String charset)
-			throws UnsupportedEncodingException, IOException {
+	public String getSourceCode() throws UnsupportedEncodingException,
+			IOException {
 		String curCharset;
-		if (charset != null) {
-			curCharset = charset;
-		} else {
-			curCharset = DEFAULT_CHARSET;
-		}
+		curCharset = DEFAULT_CHARSET;
 		if (conn != null) {
 			post();
 			BufferedReader bfr = null;
