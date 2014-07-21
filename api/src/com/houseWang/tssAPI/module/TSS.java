@@ -162,7 +162,7 @@ public class TSS {
 	/**
 	 * 得到我的课程列表
 	 * 
-	 * @return 课程列表
+	 * @return 我的课程列表
 	 * @throws NotLoginException
 	 *             没有登录
 	 */
@@ -182,6 +182,75 @@ public class TSS {
 			return myCList;
 		} catch (IOException e) {
 			e.printStackTrace();
+		return null;
+		}
+	}
+
+	/**
+	 * 得到一门课的课程信息
+	 * 
+	 * @param couId
+	 *            课程号
+	 * @return 课程
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public Course getCourseInfo(String couId) throws NotLoginException {
+		if (!isLogin) {
+			throw new NotLoginException();
+		}
+		return null;
+	}
+
+	/**
+	 * 得到一门课的公告列表
+	 * 
+	 * @param couId
+	 *            课程号
+	 * @return 公告列表
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public ArrayList<Announcement> getAnnoucementList(String couId)
+			throws NotLoginException {
+		if (!isLogin) {
+			throw new NotLoginException();
+		}
+		return null;
+	}
+
+	/**
+	 * 得到一门课的某路径下的课件列表
+	 * 
+	 * @param couId
+	 *            课程号
+	 * @param path
+	 *            路径，如果是根目录则为/
+	 * @return 课件列表
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public ArrayList<Courseware> getCoursewareList(String couId, String path)
+			throws NotLoginException {
+		if (!isLogin) {
+			throw new NotLoginException();
+		}
+		return null;
+	}
+
+	/**
+	 * 得到一门课的课程列表
+	 * 
+	 * @param couId
+	 *            课程号
+	 * @return 课程列表
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public ArrayList<Assignment> getAssignmentList(String couId)
+			throws NotLoginException {
+		if (!isLogin) {
+			throw new NotLoginException();
 		}
 		return null;
 	}
