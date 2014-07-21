@@ -5,4 +5,5 @@ public class URLConst {
 	public static final String LOGIN_REQUEST = "https://218.94.159.102/GlobalLogin/loginservlet";
 
 	public static final String ALL_COURSE = "http://218.94.159.102/tss/en/home/courselist.html";
+	public static final String MY_COURSE = "http://218.94.159.102/tss/en/home/mycourse.html";
 }

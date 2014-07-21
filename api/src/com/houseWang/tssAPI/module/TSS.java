@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.exception.NotLoginException;
+import com.houseWang.tssAPI.helper.FileHelper;
 import com.houseWang.tssAPI.helper.Filter;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 import com.houseWang.tssAPI.net.GetConnection;
@@ -147,6 +153,33 @@ public class TSS {
 			String source = conn.getSourceCode();
 			ArrayList<Course> list = Filter.filterAllCourseList(source);
 			return list;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 得到我的课程列表
+	 * 
+	 * @return 课程列表
+	 * @throws NotLoginException
+	 *             没有登录
+	 */
+	public ArrayList<Course> getMyCourseList() throws NotLoginException {
+		if (!isLogin) {
+			throw new NotLoginException();
+		}
+		try {
+			GetConnection conn = new GetConnection(URLConst.MY_COURSE);
+			if (cookie != null) {
+				conn.setRequestProperty("Cookie", cookie);
+			}
+			String source = conn.getSourceCode();
+			ArrayList<Course> cList = this.getTotalCourseList();
+			ArrayList<Course> myCList = Filter
+					.filterMyCourseList(source, cList);
+			return myCList;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

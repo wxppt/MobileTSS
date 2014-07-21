@@ -2,6 +2,8 @@ package com.houseWang.tssAPI.helper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -57,5 +59,34 @@ public class Filter {
 			}
 		}
 		return cList;
+	}
+
+	/**
+	 * 清洗我的课程列表的网页的源代码，得到我的课程号，根据课程号匹配课程
+	 * @param source
+	 * 				网页源码
+	 * @param cList
+	 * 				所有课程列表
+	 * @return myCList
+	 * 				我的课程列表
+	 */
+	public static ArrayList<Course> filterMyCourseList(String source,
+			ArrayList<Course> cList) throws IOException {
+		ArrayList<Course> myCList = new ArrayList<Course>();
+		// 读取Dom，去除源代码中所有文本空格
+		Document dom = Jsoup.parse(source.replace("&nbsp;", ""));
+		String newSource = dom.text().toString();
+		Pattern pattern = Pattern.compile("c[0-9]{4}");
+		Matcher matcher = pattern.matcher(newSource);
+		while (matcher.find()) {
+			String cid = matcher.group();
+			System.out.println(cid);
+			for (Course course : cList) {
+				if (course.getCid().equals(cid)) {
+					myCList.add(course);
+				}
+			}
+		}
+		return myCList;
 	}
 }
