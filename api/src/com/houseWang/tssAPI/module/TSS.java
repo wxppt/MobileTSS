@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.exception.NotLoginException;
+import com.houseWang.tssAPI.helper.FileHelper;
 import com.houseWang.tssAPI.helper.Filter;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 import com.houseWang.tssAPI.net.GetConnection;
@@ -257,7 +263,20 @@ public class TSS {
 		if (!isLogin) {
 			throw new NotLoginException();
 		}
-		return null;
+		try {
+			GetConnection conn = new GetConnection(
+					"http://218.94.159.102/tss/en/" + couId
+							+ "/assignment/index.html");
+			if (cookie != null) {
+				conn.setRequestProperty("Cookie", cookie);
+			}
+			String source = conn.getSourceCode();
+			ArrayList<Assignment> myCList = Filter.filterAssignmentList(source);
+			return myCList;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static void main(String[] args) throws NotLoginException {
@@ -265,6 +284,7 @@ public class TSS {
 		String password = "";
 		TSS tss = TSS.getInstance();
 		tss.login(name, password.toCharArray());
+		ArrayList<Assignment> aList = tss.getAssignmentList("c0886");
 		tss.getCoursewareList("c0867", "/安装双系统资料/VMware虚拟机安装Ubuntu/");
 	}
 }

@@ -1,12 +1,24 @@
 package com.houseWang.tssAPI.module;
 
 public class Assignment {
+	public static enum Status{
+		DDL_OVER("Deadline is over"),
+		HAS_SUBMITTED("Has submitted homework!"),
+		HAS_NOT_SUBMITTED("Has not submitted homework!"),
+		PERMISSION_DENIED("Can not check the status!");
+		 private String context;
+	     public String getContext(){
+	    	 return this.context;
+	     }
+	     private Status(String context){
+	    	 this.context = context;
+	     }
+	}
 	private String id;
 	private String deadline;
-	private String title;
-	private String file;
+	private Courseware file;
 	private String content;
-	private String status;
+	private Status status;
 
 	public String getId() {
 		return id;
@@ -24,19 +36,11 @@ public class Assignment {
 		this.deadline = deadline;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getFile() {
+	public Courseware getFile() {
 		return file;
 	}
 
-	public void setFile(String file) {
+	public void setFile(Courseware file) {
 		this.file = file;
 	}
 
@@ -48,12 +52,11 @@ public class Assignment {
 		this.content = content;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
-
 }
