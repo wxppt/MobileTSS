@@ -58,4 +58,10 @@ public class Courseware {
 		this.url = url;
 	}
 
+	@Override
+	public String toString() {
+		return "Courseware [name=" + name + ", type=" + type + ", size=" + size
+				+ ", time=" + time + ", path=" + path + ", url=" + url + "]";
+	}
+
 }

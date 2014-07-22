@@ -10,7 +10,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.module.Course;
+import com.houseWang.tssAPI.module.Courseware;
 import com.houseWang.tssAPI.module.User;
 
 public class Filter {
@@ -63,12 +65,12 @@ public class Filter {
 
 	/**
 	 * 清洗我的课程列表的网页的源代码，得到我的课程号，根据课程号匹配课程
+	 * 
 	 * @param source
-	 * 				网页源码
+	 *            网页源码
 	 * @param cList
-	 * 				所有课程列表
-	 * @return myCList
-	 * 				我的课程列表
+	 *            所有课程列表
+	 * @return myCList 我的课程列表
 	 */
 	public static ArrayList<Course> filterMyCourseList(String source,
 			ArrayList<Course> cList) throws IOException {
@@ -89,4 +91,56 @@ public class Filter {
 		}
 		return myCList;
 	}
+
+	/**
+	 * 清洗课件列表源代码，返回课件列表
+	 * 
+	 * @param source
+	 *            页面源代码
+	 * @return 该页面的课件列表
+	 */
+	public static ArrayList<Courseware> filterCoursewareList(String source) {
+		ArrayList<Courseware> list = new ArrayList<Courseware>();
+		Document dom = Jsoup.parse(source.replace("&nbsp;", ""));
+		Elements uls = dom.getElementsByTag("ul");
+		String target = uls.get(0).html();
+		String[] tarsp = target.split("<br />");
+		for (int i = 1; i < tarsp.length; i++) {
+			if (tarsp[i].length() > 20) {
+				Courseware c = new Courseware();
+				Pattern urlp = Pattern.compile("href=\".+?\"");
+				Matcher urlm = urlp.matcher(tarsp[i]);
+				if (urlm.find()) {
+					String path = urlm.group().replace("href=", "")
+							.replace("\"", "");
+					c.setUrl(URLConst.ROOT + path);
+				}
+				if (tarsp[i]
+						.contains("<img src=\"/tss/pic/dir.gif\" border=\"0\" alt=\"Dir\" />")) {
+					c.setType(Courseware.FOLDER);
+				} else {
+					c.setType(Courseware.FILE);
+					Pattern sizep = Pattern.compile("<i>.+?</i>");
+					Matcher sizem = sizep.matcher(tarsp[i]);
+					if (sizem.find()) {
+						String sizeStr = sizem.group();
+						c.setSize(Integer.parseInt(sizeStr.toLowerCase()
+								.replaceAll("<.+?>", "")
+								.replaceAll("[a-z]*", "")));
+					}
+				}
+				String[] nameAndTime = tarsp[i].replaceAll("<.+?>", "").split(
+						",");
+				c.setName(nameAndTime[0].trim());
+				Pattern timep = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
+				Matcher timem = timep.matcher(tarsp[i]);
+				if (timem.find()) {
+					c.setTime(timem.group());
+				}
+				list.add(c);
+			}
+		}
+		return list;
+	}
+
 }

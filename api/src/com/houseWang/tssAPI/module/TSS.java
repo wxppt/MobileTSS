@@ -236,7 +236,11 @@ public class TSS {
 				conn.setRequestProperty("Cookie", cookie);
 			}
 			String source = conn.getSourceCode();
-			System.out.println(source);
+			ArrayList<Courseware> list = Filter.filterCoursewareList(source);
+			for (Courseware c : list) {
+				c.setPath(path);
+			}
+			return list;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -265,6 +269,9 @@ public class TSS {
 		String password = "";
 		TSS tss = TSS.getInstance();
 		tss.login(name, password.toCharArray());
-		tss.getCoursewareList("c0867", "/安装双系统资料/VMware虚拟机安装Ubuntu/");
+		ArrayList<Courseware> list = tss.getCoursewareList("c0867", "/");
+		for (Courseware c : list) {
+			System.out.println(c);
+		}
 	}
 }
