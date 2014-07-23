@@ -4,14 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.houseWang.tssAPI.constant.URLConst;
 import com.houseWang.tssAPI.exception.NotLoginException;
-import com.houseWang.tssAPI.helper.FileHelper;
 import com.houseWang.tssAPI.helper.Filter;
 import com.houseWang.tssAPI.helper.HttpsHelper;
 import com.houseWang.tssAPI.net.GetConnection;
@@ -199,7 +193,7 @@ public class TSS {
 		if (!isLogin) {
 			throw new NotLoginException();
 		}
-		return null;
+		return new Course(couId);
 	}
 
 	/**
@@ -211,12 +205,12 @@ public class TSS {
 	 * @throws NotLoginException
 	 *             没有登录
 	 */
-	public ArrayList<Announcement> getAnnoucementList(String couId)
+	public ArrayList<Announce_record> getAnnoucementList(String couId)
 			throws NotLoginException {
 		if (!isLogin) {
 			throw new NotLoginException();
 		}
-		return null;
+		return (ArrayList<Announce_record>) new Announcements(couId).getAnnouncements();
 	}
 
 	/**
